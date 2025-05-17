@@ -61,10 +61,14 @@ if ($fileType !== 'application/pdf') {
     exit;
 }
 
-// ファイルサイズの確認（50MB制限）
-$maxFileSize = 50 * 1024 * 1024; // 50MB
+// ファイルサイズの確認（設定値を利用）
+$maxFileSize = isset($config['max_file_size'])
+    ? (int)$config['max_file_size']
+    : 50 * 1024 * 1024; // デフォルト50MB
+
 if ($_FILES['pdf']['size'] > $maxFileSize) {
-    echo "ファイルサイズが制限（50MB）を超えています。";
+    $limitMB = round($maxFileSize / (1024 * 1024));
+    echo "ファイルサイズが制限（{$limitMB}MB）を超えています。";
     exit;
 }
 
