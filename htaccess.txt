@@ -1,0 +1,49 @@
+# .htaccess - セキュリティと動作設定
+
+# PHPエラー表示を無効化（本番環境用）
+php_flag display_errors off
+
+# ファイルアップロードサイズの上限設定（50MB）
+php_value upload_max_filesize 50M
+php_value post_max_size 52M
+php_value memory_limit 256M
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# 直接アクセスの禁止
+<Files "config.php">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# 認証が必要な場合、すべてのアクセスをauth.phpを通すように設定
+# 必要に応じて有効化してください
+# DirectoryIndex auth.php
+
+# XSS対策
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+</IfModule>
+
+# ブラウザキャッシュ設定
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType text/javascript "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+# GZip圧縮設定
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript text/javascript application/x-javascript text/xml application/xml application/xml+rss
+</IfModule>
+
+# ファイルに適切なMIMEタイプを設定
+AddType application/pdf .pdf
